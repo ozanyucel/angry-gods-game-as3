@@ -1,19 +1,17 @@
 package 
 {
+	import com.matttuttle.GameWorld;
 	import net.flashpunk.Engine;
 	import net.flashpunk.FP;
 	
-	/**
-	$(CBI)* ...
-	$(CBI)* @author ozan
-	$(CBI)*/
+	[SWF(width='800', height='576', frameRate='30')]
 	public class Main extends Engine
 	{		
 		public function Main():void 
 		{
-			super(800, 600, 60, false);
+			super(800, 576, 30, true);
 			
-			FP.world = new MyWorld;
+			FP.world = new GameWorld();
 		}
 		
 		override public function init():void { 

@@ -1,6 +1,9 @@
 package  
 {
+	import com.matttuttle.PhysicsEntity;
+	import flash.display.BitmapData;
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
 	import net.flashpunk.utils.Input;
@@ -9,34 +12,96 @@ package
 	$(CBI)* ...
 	$(CBI)* @author ozan
 	$(CBI)*/
-	public class Player extends Entity
+	public class Player extends PhysicsEntity
 	{
-		[Embed(source = '../assets/swordguy.png')]
-		private const SWORDGUY:Class;
+		private var playerSprite:Spritemap = new Spritemap(Assets.GFX_PLAYER, Assets.GFX_PLAYER_W, Assets.GFX_PLAYER_H);
 		
-		public var sprSwordguy:Spritemap = new Spritemap(SWORDGUY, 48, 32);
+		private static const kMoveSpeed:uint = 2;
+		private static const kJumpForce:uint = 20;
 		
-		public function Player() 
-		{
-			setHitbox(50, 50);
+		public function Player(initX:Number=0, initY:Number=0) 
+		{	
+			width = 16;
+			height = 32;
+			originX = (width - Assets.GFX_PLAYER_W) / 2;
+			originY = 0;
 			
-			sprSwordguy.add("stand", [0, 1, 2, 3, 4, 5], 20, true);
-			sprSwordguy.add("run", [6, 7, 8, 9, 10, 11], 20, true);
-			graphic = sprSwordguy;
+			x = initX - (width / 2);
+			y = initY - height;			
 			
-			sprSwordguy.play("run");
+			playerSprite.add("right_idle", [19, 19, 19, 20], 0.1, true);
+			playerSprite.add("right_walk", [0, 1, 2, 3, 4, 5, 6, 7], 0.25, true);
+			playerSprite.add("right_jump", [21]);
+			
+			playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
+			playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
+			playerSprite.add("left_jump", [18]);
+				
+			graphic = playerSprite; 			//new Image(new BitmapData(PLAYER_WIDTH, PLAYER_HEIGHT, false, 0xff0000));
+			
+			// Set physics properties
+			gravity.y = 2.6;
+			maxVelocity.y = kJumpForce;
+			maxVelocity.x = kMoveSpeed * 2;
+			friction.x = 0.7; // floor friction
+			friction.y = 2.0; // wall friction
+			
+			// Define input keys
+			Input.define("left", Key.A, Key.LEFT);
+			Input.define("right", Key.D, Key.RIGHT);
+			Input.define("jump", Key.W, Key.SPACE, Key.UP);
 		}
 	
 		override public function update():void
 		{
-			if (Input.check(Key.LEFT)) { x -= 5; }
-			if (Input.check(Key.RIGHT)) { x += 5; }
-			if (Input.check(Key.UP)) { y -= 5; }
-			if (Input.check(Key.DOWN)) { y += 5; }
+			acceleration.x = acceleration.y = 0;
 			
-			var b:Bullet = collide("bullet", x, y) as Bullet;
-			if (b)
-				b.destroy();
+			if (Input.check("left"))
+				acceleration.x = -kMoveSpeed;
+			
+			if (Input.check("right"))
+				acceleration.x = kMoveSpeed;
+			
+			if (Input.pressed("jump") && onGround)
+			{
+				acceleration.y = -FP.sign(gravity.y) * kJumpForce;
+				acceleration.x = -FP.sign(gravity.x) * kJumpForce;
+			}
+			
+			// Make animation changes here
+			setAnimation();
+			
+			super.update();
+			
+			// Always face the direction we were last heading
+			if (velocity.x < 0)
+				facing = LEFT;
+			else if (velocity.x > 0)
+				facing = RIGHT;
+		}
+		
+		private function setAnimation():void
+		{
+			var animation:String;
+			
+			if (facing == LEFT)
+				animation = "left_";
+			else
+				animation = "right_";
+			
+			if (onGround)
+			{
+				if (velocity.x == 0)
+					animation += "idle";
+				else
+					animation += "walk";
+			}
+			else
+			{
+				animation += "jump";
+			}
+			
+			playerSprite.play(animation);
 		}
 		
 	}
