@@ -2,6 +2,7 @@ package
 {
 	import com.matttuttle.PhysicsEntity;
 	import flash.display.BitmapData;
+	import flash.geom.Point;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
@@ -18,6 +19,9 @@ package
 		
 		private static const kMoveSpeed:uint = 2;
 		private static const kJumpForce:uint = 20;
+			
+		public var minWorld:Point = new Point(0, 0);
+		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
 		
 		public function Player(initX:Number=0, initY:Number=0) 
 		{	
@@ -78,6 +82,12 @@ package
 				facing = LEFT;
 			else if (velocity.x > 0)
 				facing = RIGHT;
+				
+			if(this.collide(GC.TYPE_BLOCK, x, y))
+			{
+				trace("DEAD!");
+				this.world.remove(this);
+			}
 		}
 		
 		private function setAnimation():void
@@ -102,6 +112,15 @@ package
 			}
 			
 			playerSprite.play(animation);
+		}
+		
+		override protected function canMoveTo(x:Number, y:Number):Boolean 
+		{
+			if (x - originX < minWorld.x || y - originY < minWorld.y 
+					|| x - originX + width > maxWorld.x || y - originY + height > maxWorld.y)
+				return false;
+			
+			return super.canMoveTo(x, y);
 		}
 		
 	}

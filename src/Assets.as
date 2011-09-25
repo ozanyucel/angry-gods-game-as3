@@ -11,5 +11,10 @@ package
 		public static const GFX_BLOCK:Class;	
 		static public const GFX_BLOCK_W:int = 32;
 		static public const GFX_BLOCK_H:int = 32;
+		
+		static public const TILE_CAR_X:int = 2;
+		static public const TILE_CAR_Y:int = 0;
+		static public const TILE_CAR_W:int = 2;
+		static public const TILE_CAR_H:int = 1;
 	}
 }

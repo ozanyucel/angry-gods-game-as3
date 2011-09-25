@@ -22,9 +22,6 @@ package com.matttuttle
 		public var facing:uint;
 		public var solid:String = "solid";
 		
-		public var minWorld:Point = new Point(0, 0);
-		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
-		
 		public function PhysicsEntity()
 		{
 			_onGround = _onWall = false;
@@ -149,14 +146,8 @@ package com.matttuttle
 			}
 		}
 		
-		private function canMoveTo(x:Number, y:Number):Boolean 
+		protected function canMoveTo(x:Number, y:Number):Boolean 
 		{
-			trace(x - originX + " - " + left);
-			
-			if (x - originX < minWorld.x || y - originY < minWorld.y 
-					|| x - originX + width > maxWorld.x || y - originY + height > maxWorld.y)
-				return false;
-			
 			return !collide(solid, x, y);
 		}
 		

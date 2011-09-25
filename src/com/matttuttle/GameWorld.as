@@ -9,6 +9,8 @@ package com.matttuttle
 	
 	public class GameWorld extends World
 	{
+		private var _tilemap:Tilemap;
+		private var _grid:Grid;
 		
 		public function GameWorld()
 		{
@@ -16,40 +18,64 @@ package com.matttuttle
 			
 			add(new Player(FP.screen.width / 2, FP.screen.height - Assets.GFX_BLOCK_H));
 			
-			// Create tilemap
-			var tilemap:Tilemap = new Tilemap(Assets.GFX_BLOCK, FP.screen.width, FP.screen.height, Assets.GFX_BLOCK_W, Assets.GFX_BLOCK_H);
-			// Create grid mask
-			var grid:Grid = new Grid(tilemap.width, tilemap.height, tilemap.tileWidth, tilemap.tileHeight);
+			// Create _tilemap
+			_tilemap = new Tilemap(Assets.GFX_BLOCK, FP.screen.width, FP.screen.height, Assets.GFX_BLOCK_W, Assets.GFX_BLOCK_H);
+			// Create _grid mask
+			_grid = new Grid(_tilemap.width, _tilemap.height, _tilemap.tileWidth, _tilemap.tileHeight);
 			
-			// Fill the tilemap and grid programatically
+			// Fill the _tilemap and _grid programatically
 			var i:int;
-			for (i = 0; i < tilemap.columns - 2; i++)
+			for (i = 0; i < _tilemap.columns; i++)
 			{
 				// top wall
-				//tilemap.setTile(i, 0, 1);
-				//grid.setTile(i, 0, true);
+				//_tilemap.setTile(i, 0, 1);
+				//_grid.setTile(i, 0, true);
 				// bottom wall
-				tilemap.setTile(i, tilemap.rows - 1, 1);
-				grid.setTile(i, tilemap.rows - 1, true);
+				addGround(i, _tilemap.rows - 1);
 			}
-			/*for (i = 0; i < tilemap.rows; i++)
+			/*for (i = 0; i < _tilemap.rows; i++)
 			{
 				// left wall
-				tilemap.setTile(0, i, 1);
-				grid.setTile(0, i, true);
+				_tilemap.setTile(0, i, 1);
+				_grid.setTile(0, i, true);
 				// right wall
-				tilemap.setTile(tilemap.columns - 1, i, 1);
-				grid.setTile(tilemap.columns - 1, i, true);
+				_tilemap.setTile(_tilemap.columns - 1, i, 1);
+				_grid.setTile(_tilemap.columns - 1, i, true);
 			}*/
 			
-			// Create a new entity to use as a tilemap
+			// Create a new entity to use as a _tilemap
 			var entity:Entity = new Entity();
-			entity.graphic = tilemap;
-			entity.mask = grid;
+			entity.graphic = _tilemap;
+			entity.mask = _grid;
 			entity.type = "solid";
 			add(entity);
 		}
 		
+		private function addGround(column:uint, row:uint):void 
+		{
+			_tilemap.setTile(column, row, 1);
+			_grid.setTile(column, row, true);			
+		}
+		
+		public function addBlockToGround(block:Block):void 
+		{
+			var tileX:int = block.x / block.width;
+			var tileY:int = block.y / block.height;
+
+			addGround(tileX, tileY);
+			
+			remove(block);
+		}
+		
+		override public function update():void
+		{
+			if(FP.random < GC.BLOCK_SPAWN_CHANCE)
+			{
+				add(new Block());
+			}
+			
+			super.update();
+		}		
 	}
 
 }
