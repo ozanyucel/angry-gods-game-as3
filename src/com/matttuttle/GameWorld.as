@@ -1,6 +1,7 @@
 package com.matttuttle
 {
-	
+	import flash.display.BitmapData;
+	import graphics.*;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
 	import net.flashpunk.World;
@@ -9,8 +10,9 @@ package com.matttuttle
 	
 	public class GameWorld extends World
 	{
-		private var _tilemap:Tilemap;
+		private var _tilemap:TileMapExt;
 		private var _grid:Grid;
+		private var _blockGraphics:Array;
 		
 		public function GameWorld()
 		{
@@ -19,29 +21,14 @@ package com.matttuttle
 			add(new Player(FP.screen.width / 2, FP.screen.height - Assets.GFX_BLOCK_H));
 			
 			// Create _tilemap
-			_tilemap = new Tilemap(Assets.GFX_BLOCK, FP.screen.width, FP.screen.height, Assets.GFX_BLOCK_W, Assets.GFX_BLOCK_H);
+			_tilemap = new TileMapExt(Assets.GFX_BLOCK, FP.screen.width, FP.screen.height, Assets.GFX_BLOCK_W, Assets.GFX_BLOCK_H);
 			// Create _grid mask
 			_grid = new Grid(_tilemap.width, _tilemap.height, _tilemap.tileWidth, _tilemap.tileHeight);
 			
 			// Fill the _tilemap and _grid programatically
 			var i:int;
 			for (i = 0; i < _tilemap.columns; i++)
-			{
-				// top wall
-				//_tilemap.setTile(i, 0, 1);
-				//_grid.setTile(i, 0, true);
-				// bottom wall
 				addGround(i, _tilemap.rows - 1);
-			}
-			/*for (i = 0; i < _tilemap.rows; i++)
-			{
-				// left wall
-				_tilemap.setTile(0, i, 1);
-				_grid.setTile(0, i, true);
-				// right wall
-				_tilemap.setTile(_tilemap.columns - 1, i, 1);
-				_grid.setTile(_tilemap.columns - 1, i, true);
-			}*/
 			
 			// Create a new entity to use as a _tilemap
 			var entity:Entity = new Entity();
@@ -49,33 +36,71 @@ package com.matttuttle
 			entity.mask = _grid;
 			entity.type = "solid";
 			add(entity);
-		}
-		
-		private function addGround(column:uint, row:uint):void 
-		{
-			_tilemap.setTile(column, row, 1);
-			_grid.setTile(column, row, true);			
+			
+			_blockGraphics = new Array();
+			_blockGraphics.push(new TileMapGraphic("block_1", 0, 0, 1, 1));
+			_blockGraphics.push(new TileMapGraphic("block_2", 1, 0, 1, 1));
+			_blockGraphics.push(new TileMapGraphic("car_1", 2, 0, 2, 1));
 		}
 		
 		public function addBlockToGround(block:Block):void 
 		{
 			var tileX:int = block.x / block.width;
 			var tileY:int = block.y / block.height;
-
-			addGround(tileX, tileY);
 			
+			var blockInfo:TileMapGraphic = getBlockInfo(block.name);
+			if (blockInfo) {
+				addGround(tileX, tileY);
+			}
+	
 			remove(block);
 		}
+		
+		private function addGround(tileX:int, tileY:int, blockInfo:TileMapGraphic):void 
+		{
+			for (var i:int = 0; i < blockInfo.width; i++) 
+			{
+				for (var j:int = 0; j < blockInfo.height; j++) 
+				{
+					var column:int = i + blockInfo.x;
+					var row:int = j + blockInfo.y;
+					
+					_tilemap.setTile(column, row, 1);
+					_grid.setTile(column, row, true);						
+				}
+			}
+		}
+		
+		//private function addGround(column:uint, row:uint):void 
+		//{
+			//_tilemap.setTile(column, row, 1);
+			//_grid.setTile(column, row, true);			
+		//}
 		
 		override public function update():void
 		{
 			if(FP.random < GC.BLOCK_SPAWN_CHANCE)
 			{
-				add(new Block());
+				var blockInfo:TileMapGraphic = _blockGraphics[FP.rand(_blockGraphics.length)];
+				var blockBitmap:BitmapData = _tilemap.getBitmap(blockInfo.x, blockInfo.y, blockInfo.width, blockInfo.height);
+				
+				add(new Block(blockInfo.name, blockBitmap));
 			}
 			
 			super.update();
 		}		
+		
+		private function getBlockInfo(name:String):TileMapGraphic 
+		{
+			for (var i:int = 0; i < _blockGraphics.length; i++) 
+			{
+				var blockInfo:TileMapGraphic = _blockGraphics[i];
+				if (blockInfo.name == name)
+					return blockInfo;
+			}
+			
+			return null;
+		}
 	}
 
 }

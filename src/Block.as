@@ -11,20 +11,25 @@ package
 	$(CBI)*/
 	public class Block extends PhysicsEntity
 	{
-		public function Block() 
+		private var _name:String;
+		
+		public function Block(name:String, bitmap:BitmapData) 
 		{	
-			width = 32;
-			height = 32;
+			_name = name;
+			
+			width = bitmap.width;
+			height = bitmap.height;
 			originX = 0;
 			originY = 0;
 			
 			x = FP.rand(FP.screen.width / width) * width;
 			y = 0;			
 				
-			graphic = new Image(new BitmapData(width, height, false, 0xff0000));
+			graphic = new Image(bitmap);
 			
 			// Set physics properties
 			gravity.y = 2.6;
+			maxVelocity.y =  gravity.y * 3;
 			
 			type = "block";
 		}
@@ -36,6 +41,11 @@ package
 			if (onGround)
 				GameWorld(this.world).addBlockToGround(this);
 				
+		}
+		
+		public function get name():String 
+		{
+			return _name;
 		}
 	}
 }
