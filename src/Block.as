@@ -29,7 +29,7 @@ package
 			
 			// Set physics properties
 			gravity.y = 2.6;
-			maxVelocity.y =  gravity.y * 3;
+			maxVelocity.y =  gravity.y * 4;
 			
 			type = "block";
 		}

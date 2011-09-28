@@ -18,6 +18,11 @@ package com.matttuttle
 		{
 			FP.screen.color = 0x8EDFFA;
 			
+			_blockGraphics = new Array();
+			_blockGraphics.push(new TileMapGraphic("block_1", 0, 0, 1, 1));
+			_blockGraphics.push(new TileMapGraphic("block_2", 1, 0, 1, 1));
+			_blockGraphics.push(new TileMapGraphic("car_1", 2, 0, 2, 1));
+			
 			add(new Player(FP.screen.width / 2, FP.screen.height - Assets.GFX_BLOCK_H));
 			
 			// Create _tilemap
@@ -28,7 +33,7 @@ package com.matttuttle
 			// Fill the _tilemap and _grid programatically
 			var i:int;
 			for (i = 0; i < _tilemap.columns; i++)
-				addGround(i, _tilemap.rows - 1);
+				addGround(i, _tilemap.rows - 1, _blockGraphics[1]);
 			
 			// Create a new entity to use as a _tilemap
 			var entity:Entity = new Entity();
@@ -36,21 +41,16 @@ package com.matttuttle
 			entity.mask = _grid;
 			entity.type = "solid";
 			add(entity);
-			
-			_blockGraphics = new Array();
-			_blockGraphics.push(new TileMapGraphic("block_1", 0, 0, 1, 1));
-			_blockGraphics.push(new TileMapGraphic("block_2", 1, 0, 1, 1));
-			_blockGraphics.push(new TileMapGraphic("car_1", 2, 0, 2, 1));
 		}
 		
 		public function addBlockToGround(block:Block):void 
 		{
-			var tileX:int = block.x / block.width;
-			var tileY:int = block.y / block.height;
+			var tileX:int = block.x / Assets.GFX_BLOCK_W;
+			var tileY:int = block.y / Assets.GFX_BLOCK_H;
 			
 			var blockInfo:TileMapGraphic = getBlockInfo(block.name);
 			if (blockInfo) {
-				addGround(tileX, tileY);
+				addGround(tileX, tileY, blockInfo);
 			}
 	
 			remove(block);
@@ -62,11 +62,10 @@ package com.matttuttle
 			{
 				for (var j:int = 0; j < blockInfo.height; j++) 
 				{
-					var column:int = i + blockInfo.x;
-					var row:int = j + blockInfo.y;
+					var bitmapIndex:int = _tilemap.getIndex(blockInfo.x + i, blockInfo.y + j);
 					
-					_tilemap.setTile(column, row, 1);
-					_grid.setTile(column, row, true);						
+					_tilemap.setTile(i + tileX, j + tileY, bitmapIndex);
+					_grid.setTile(i + tileX, j + tileY, true);						
 				}
 			}
 		}
