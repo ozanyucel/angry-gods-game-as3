@@ -1,24 +1,21 @@
 package graphics 
 {
+	import flash.geom.Rectangle;
 	/**
 	$(CBI)* ...
 	$(CBI)* @author Ozan Yücel
 	$(CBI)*/
 	public class TileMapGraphic 
 	{
+		private var _source:*;
 		private var _name:String;
-		private var _x:int;
-		private var _y:int;
-		private var _width:int;
-		private var _height:int;
+		private var _rect:Rectangle;
 		
-		public function TileMapGraphic(name:String, x:int, y:int, width:int, height:int) 
+		public function TileMapGraphic(source:*, name:String, x:int, y:int, width:int, height:int) 
 		{
+			_source = source;
 			_name 	= name;
-			_x 		= x;
-			_y 		= y;
-			_width 	= width;
-			_height = height;
+			_rect 	= new Rectangle(x, y, width, height);
 		}
 		
 		public function get name():String 
@@ -28,24 +25,27 @@ package graphics
 		
 		public function get x():int 
 		{
-			return _x;
+			return _rect.x;
 		}
 		
 		public function get y():int 
 		{
-			return _y;
+			return _rect.y;
 		}
 		
 		public function get width():int 
 		{
-			return _width;
+			return _rect.width;
 		}
 		
 		public function get height():int 
 		{
-			return _height;
+			return _rect.height;
 		}
 		
+		public function get source():* 
+		{
+			return _source;
+		}	
 	}
-
 }

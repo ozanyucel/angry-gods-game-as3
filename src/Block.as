@@ -3,6 +3,8 @@ package
 	import com.matttuttle.GameWorld;
 	import com.matttuttle.PhysicsEntity;
 	import flash.display.BitmapData;
+	import flash.geom.Rectangle;
+	import graphics.TileMapGraphic;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
 	/**
@@ -11,21 +13,24 @@ package
 	$(CBI)*/
 	public class Block extends PhysicsEntity
 	{
-		private var _name:String;
+		private var _tileGraphic:TileMapGraphic;
 		
-		public function Block(name:String, bitmap:BitmapData) 
+		public function Block(tileGraphic:TileMapGraphic) 
 		{	
-			_name = name;
+			_tileGraphic = tileGraphic;
 			
-			width = bitmap.width;
-			height = bitmap.height;
+			width = tileGraphic.width * Assets.GFX_BLOCK_W;
+			height = tileGraphic.height * Assets.GFX_BLOCK_H;
 			originX = 0;
 			originY = 0;
 			
 			x = FP.rand(FP.screen.width / width) * width;
 			y = 0;			
 				
-			graphic = new Image(bitmap);
+			var kx:int = Assets.GFX_BLOCK_W;
+			var ky:int = Assets.GFX_BLOCK_H;
+			var rect:Rectangle = new Rectangle(tileGraphic.x * kx, tileGraphic.y * ky, tileGraphic.width * kx, tileGraphic.height * ky);
+			graphic = new Image(tileGraphic.source, rect);
 			
 			// Set physics properties
 			gravity.y = 2.6;
@@ -40,12 +45,11 @@ package
 			
 			if (onGround)
 				GameWorld(this.world).addBlockToGround(this);
-				
 		}
 		
 		public function get name():String 
 		{
-			return _name;
+			return _tileGraphic.name;
 		}
 	}
 }

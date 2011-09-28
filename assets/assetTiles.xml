@@ -1,0 +1,7 @@
+<asset>
+	<tileGraphics>
+		<graphic x="0" y="0" width="1" height="1" name="block_1" />
+		<graphic x="1" y="0" width="1" height="1" name="block_2" />
+		<graphic x="2" y="0" width="2" height="1" name="car_1" />
+	</tileGraphics>
+</asset>

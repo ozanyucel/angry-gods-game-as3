@@ -19,6 +19,8 @@ package
 		
 		private static const kMoveSpeed:uint = 2;
 		private static const kJumpForce:uint = 20;
+		
+		private var _initY:Number = 0;
 			
 		public var minWorld:Point = new Point(0, 0);
 		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
@@ -32,6 +34,8 @@ package
 			
 			x = initX - (width / 2);
 			y = initY - height;			
+			
+			_initY = y;
 			
 			playerSprite.add("right_idle", [19, 19, 19, 20], 0.1, true);
 			playerSprite.add("right_walk", [0, 1, 2, 3, 4, 5, 6, 7], 0.25, true);
@@ -83,10 +87,15 @@ package
 			else if (velocity.x > 0)
 				facing = RIGHT;
 				
-			if(this.collide(GC.TYPE_BLOCK, x, y))
+			var block:Entity = this.collide(GC.TYPE_BLOCK, x, y);
+			if (block)
 			{
-				trace("DEAD!");
-				this.world.remove(this);
+				trace("DEAD!: " + y + ", initY: " + _initY);
+				
+				if (onGround)
+					this.world.remove(this);
+				else
+					y = block.y + block.height;
 			}
 		}
 		
@@ -119,10 +128,11 @@ package
 			if (x - originX < minWorld.x || y - originY < minWorld.y 
 					|| x - originX + width > maxWorld.x || y - originY + height > maxWorld.y)
 				return false;
+				
+			//if (collide("block", x, y))
+				//return false;
 			
 			return super.canMoveTo(x, y);
-		}
-		
+		}	
 	}
-
 }
