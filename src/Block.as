@@ -1,12 +1,12 @@
 package  
 {
-	import com.matttuttle.GameWorld;
 	import com.matttuttle.PhysicsEntity;
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import graphics.TileGraphicInfo;
 	import net.flashpunk.FP;
 	import net.flashpunk.graphics.Image;
+	import worlds.GameWorld;
 	/**
 	$(CBI)* ...
 	$(CBI)* @author ozan

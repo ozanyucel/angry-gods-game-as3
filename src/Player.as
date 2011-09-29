@@ -21,6 +21,7 @@ package
 		private static const kJumpForce:Number = 18;
 		
 		private var _initY:Number = 0;
+		private var _dead:Boolean = false;
 			
 		public var minWorld:Point = new Point(0, 0);
 		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
@@ -97,7 +98,7 @@ package
 			{
 				if (onGround) {
 					trace("DEAD!: " + y + ", initY: " + _initY);
-					this.world.remove(this);
+					_dead = true;
 				}
 				else {
 					y = block.y + block.height;
@@ -140,5 +141,10 @@ package
 			
 			return super.canMoveTo(x, y);
 		}	
+		
+		public function get dead():Boolean 
+		{
+			return _dead;
+		}
 	}
 }

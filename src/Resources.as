@@ -12,6 +12,9 @@ package
 		static public const GFX_BLOCK_W:int = 16;
 		static public const GFX_BLOCK_H:int = 16;
 		
+		[Embed(source = '../assets/title.png')] 
+		public static const GFX_TITLE:Class;
+		
 		[Embed(source = "../assets/blocks.xml", mimeType = "application/octet-stream")]
 		static public const XML_BLOCKS:Class;
 		

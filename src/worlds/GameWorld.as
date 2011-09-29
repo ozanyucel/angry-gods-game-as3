@@ -1,9 +1,14 @@
-package com.matttuttle
+package worlds
 {
 	import flash.display.BitmapData;
 	import graphics.*;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.graphics.Text;
+	import net.flashpunk.tweens.misc.VarTween;
+	import net.flashpunk.utils.Ease;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
@@ -12,12 +17,19 @@ package com.matttuttle
 	{
 		private var _tilemap:Tilemap;
 		private var _grid:Grid;
+		private var _player:Player;
+		private var _hasPlayedTitle:Boolean = false;
+		private var _infoText:Text;
 
 		public function GameWorld()
+		{	
+			startGame();
+		}
+		
+		private function startGame():void 
 		{
-			FP.screen.color = 0x8EDFFA;
-
-			add(new Player(FP.screen.width / 2, FP.screen.height - Resources.GFX_BLOCK_H));
+			_player = new Player(FP.screen.width / 2, FP.screen.height - Resources.GFX_BLOCK_H);
+			add(_player);
 			
 			// Create _tilemap
 			_tilemap = new Tilemap(Resources.GFX_BLOCKS, FP.screen.width, FP.screen.height, Resources.GFX_BLOCK_W, Resources.GFX_BLOCK_H);
@@ -34,7 +46,9 @@ package com.matttuttle
 			entity.graphic = _tilemap;
 			entity.mask = _grid;
 			entity.type = "solid";
-			add(entity);
+			add(entity);			
+			
+			_hasPlayedTitle = false;
 		}
 		
 		public function addBlockToGround(block:Block):void 
@@ -73,7 +87,34 @@ package com.matttuttle
 				add(new Block(blockInfo));
 			}
 			
+			if (_player && _player.dead) {
+				this.remove(_player);
+				_player = null;
+				_infoText = new Text("click to play again!");
+				_infoText.x = FP.screen.width / 2 - _infoText.width / 2;
+				_infoText.y = FP.screen.height / 2 - _infoText.width / 2 + 50;
+				_infoText.color = 0;
+				_infoText.alpha = 0;
+				addGraphic(_infoText, -1);
+				var textTween:VarTween = new VarTween(onTextFade);
+				textTween.tween(_infoText, "alpha", 1, 0.5, Ease.quadIn);
+				addTween(textTween, true);
+			}
+			
+			if (_infoText && _hasPlayedTitle) {
+				if (Input.check("start")) {
+					this.removeAll();
+					_infoText = null;
+					startGame();
+				}		
+			}
+			
 			super.update();
 		}		
+		
+		protected function onTextFade():void
+		{
+			_hasPlayedTitle = true;
+		}
 	}
 }
