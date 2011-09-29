@@ -1,17 +1,18 @@
 package graphics 
 {
 	import flash.geom.Rectangle;
+	import net.flashpunk.graphics.Image;
 	/**
 	$(CBI)* ...
 	$(CBI)* @author Ozan Yücel
 	$(CBI)*/
-	public class TileMapGraphic 
+	public class TileGraphicInfo 
 	{
 		private var _source:*;
 		private var _name:String;
 		private var _rect:Rectangle;
 		
-		public function TileMapGraphic(source:*, name:String, x:int, y:int, width:int, height:int) 
+		public function TileGraphicInfo(source:*, name:String, x:int, y:int, width:int, height:int) 
 		{
 			_source = source;
 			_name 	= name;
@@ -47,5 +48,10 @@ package graphics
 		{
 			return _source;
 		}	
+		
+		public function getImage(rect:Rectangle):Image 
+		{
+			return new Image(source, rect);
+		}
 	}
 }

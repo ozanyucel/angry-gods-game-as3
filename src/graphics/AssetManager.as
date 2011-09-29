@@ -1,6 +1,7 @@
 package graphics 
 {
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import net.flashpunk.FP;
 	/**
 	$(CBI)* ...
@@ -8,14 +9,15 @@ package graphics
 	$(CBI)*/
 	public class AssetManager 
 	{
-		private static var _tileGraphics:Array = new Array();
+		private static var _assets:Dictionary = new Dictionary();
+		
 		
 		public function AssetManager() 
 		{
-			loadXML(Assets.XML_ASSET_TILES);
+			_assets[String(Resources.GFX_BLOCKS)] = getAssetFromXML(Resources.GFX_BLOCKS, Resources.XML_BLOCKS);
 		}
 		
-		private function loadXML(xml:Class):void 
+		private function getAssetFromXML(bitmap:Class, xml:Class):AssetInfo 
 		{
 			var rawData:ByteArray = new xml;
 			var dataString:String = rawData.readUTFBytes(rawData.length);
@@ -24,34 +26,39 @@ package graphics
 			var dataList:XMLList;
 			var dataElement:XML;
 			
+			var asset:AssetInfo = new AssetInfo(bitmap, xmlData.width, xmlData.height, xmlData.tileWidth, xmlData.tileHeight);
+			
 			dataList = xmlData.tileGraphics.graphic;
 			
+			var tileGraphics:Array = new Array();
 			for each (dataElement in dataList) {
-				_tileGraphics.push(new TileMapGraphic(Assets.GFX_BLOCK, dataElement.@name,
+				tileGraphics.push(new TileGraphicInfo(Resources.GFX_BLOCKS, dataElement.@name,
 						dataElement.@x, dataElement.@y, dataElement.@width, dataElement.@height));
 			}
+			
+			asset.tileGraphics = tileGraphics;
+			
+			return asset;
 		}
-		
-		static public function getGraphicInfo(name:String):TileMapGraphic 
+
+		static public function getGraphicInfo(source:Class, name:String):TileGraphicInfo 
 		{
-			for (var i:int = 0; i < _tileGraphics.length; i++) 
-			{
-				var tileInfo:TileMapGraphic = _tileGraphics[i];
-				if (tileInfo.name == name)
-					return tileInfo;
-			}
+			var asset:AssetInfo = _assets[String(source)];
+			
+			if (asset)
+				return asset.getGraphicInfo(name);
 			
 			return null;
-		}
+		}	
 		
-		static public function getRandomGraphic():TileMapGraphic 
+		static public function getRandomGraphic(source:Class):TileGraphicInfo 
 		{
-			return _tileGraphics[FP.rand(_tileGraphics.length)];
-		}
-		
-		static public function get tileGraphics():Array 
-		{
-			return _tileGraphics;
+			var asset:AssetInfo = _assets[String(source)];
+			
+			if (asset)
+				return asset.getRandomGraphic();
+			
+			return null;
 		}
 	}
 }

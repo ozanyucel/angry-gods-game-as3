@@ -15,10 +15,10 @@ package
 	$(CBI)*/
 	public class Player extends PhysicsEntity
 	{
-		private var playerSprite:Spritemap = new Spritemap(Assets.GFX_PLAYER, Assets.GFX_PLAYER_W, Assets.GFX_PLAYER_H);
+		private var playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_PLAYER_W, Resources.GFX_PLAYER_H);
 		
 		private static const kMoveSpeed:uint = 2;
-		private static const kJumpForce:uint = 20;
+		private static const kJumpForce:uint = 25;
 		
 		private var _initY:Number = 0;
 			
@@ -29,7 +29,7 @@ package
 		{	
 			width = 16;
 			height = 32;
-			originX = (width - Assets.GFX_PLAYER_W) / 2;
+			originX = (width - Resources.GFX_PLAYER_W) / 2;
 			originY = 0;
 			
 			x = initX - (width / 2);
@@ -90,12 +90,13 @@ package
 			var block:Entity = this.collide(GC.TYPE_BLOCK, x, y);
 			if (block)
 			{
-				trace("DEAD!: " + y + ", initY: " + _initY);
-				
-				if (onGround)
+				if (onGround) {
+					trace("DEAD!: " + y + ", initY: " + _initY);
 					this.world.remove(this);
-				else
+				}
+				else {
 					y = block.y + block.height;
+				}
 			}
 		}
 		

@@ -17,17 +17,17 @@ package com.matttuttle
 		{
 			FP.screen.color = 0x8EDFFA;
 
-			add(new Player(FP.screen.width / 2, FP.screen.height - Assets.GFX_BLOCK_H));
+			add(new Player(FP.screen.width / 2, FP.screen.height - Resources.GFX_BLOCK_H));
 			
 			// Create _tilemap
-			_tilemap = new Tilemap(Assets.GFX_BLOCK, FP.screen.width, FP.screen.height, Assets.GFX_BLOCK_W, Assets.GFX_BLOCK_H);
+			_tilemap = new Tilemap(Resources.GFX_BLOCKS, FP.screen.width, FP.screen.height, Resources.GFX_BLOCK_W, Resources.GFX_BLOCK_H);
 			// Create _grid mask
 			_grid = new Grid(_tilemap.width, _tilemap.height, _tilemap.tileWidth, _tilemap.tileHeight);
 			
 			// Fill the _tilemap and _grid programatically
 			var i:int;
 			for (i = 0; i < _tilemap.columns; i++)
-				addGround(i, _tilemap.rows - 1, AssetManager.tileGraphics[1]);
+				addGround(i, _tilemap.rows - 1, AssetManager.getGraphicInfo(Resources.GFX_BLOCKS, "block_1"));
 			
 			// Create a new entity to use as a _tilemap
 			var entity:Entity = new Entity();
@@ -39,10 +39,10 @@ package com.matttuttle
 		
 		public function addBlockToGround(block:Block):void 
 		{
-			var tileX:int = block.x / Assets.GFX_BLOCK_W;
-			var tileY:int = block.y / Assets.GFX_BLOCK_H;
+			var tileX:int = block.x / Resources.GFX_BLOCK_W;
+			var tileY:int = block.y / Resources.GFX_BLOCK_H;
 			
-			var blockInfo:TileMapGraphic = AssetManager.getGraphicInfo(block.name);
+			var blockInfo:TileGraphicInfo = AssetManager.getGraphicInfo(Resources.GFX_BLOCKS, block.name);
 			if (blockInfo) {
 				addGround(tileX, tileY, blockInfo);
 			}
@@ -50,7 +50,7 @@ package com.matttuttle
 			remove(block);
 		}
 		
-		private function addGround(tileX:int, tileY:int, blockInfo:TileMapGraphic):void 
+		private function addGround(tileX:int, tileY:int, blockInfo:TileGraphicInfo):void 
 		{
 			for (var i:int = 0; i < blockInfo.width; i++) 
 			{
@@ -68,7 +68,7 @@ package com.matttuttle
 		{
 			if(FP.random < GC.BLOCK_SPAWN_CHANCE)
 			{
-				var blockInfo:TileMapGraphic = AssetManager.getRandomGraphic();
+				var blockInfo:TileGraphicInfo = AssetManager.getRandomGraphic(Resources.GFX_BLOCKS);
 				
 				add(new Block(blockInfo));
 			}
