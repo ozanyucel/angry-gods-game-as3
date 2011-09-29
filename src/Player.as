@@ -17,18 +17,18 @@ package
 	{
 		private var playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_PLAYER_W, Resources.GFX_PLAYER_H);
 		
-		private static const kMoveSpeed:uint = 2;
-		private static const kJumpForce:uint = 25;
+		private static const kMoveSpeed:Number = 1.5;
+		private static const kJumpForce:Number = 18;
 		
 		private var _initY:Number = 0;
 			
 		public var minWorld:Point = new Point(0, 0);
 		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
 		
-		public function Player(initX:Number=0, initY:Number=0) 
+		public function Player(initX:Number=0, initY:Number=0) // floor position
 		{	
-			width = 16;
-			height = 32;
+			width = Resources.GFX_PLAYER_W / 2;
+			height = Resources.GFX_PLAYER_H;
 			originX = (width - Resources.GFX_PLAYER_W) / 2;
 			originY = 0;
 			
@@ -48,11 +48,11 @@ package
 			graphic = playerSprite; 			//new Image(new BitmapData(PLAYER_WIDTH, PLAYER_HEIGHT, false, 0xff0000));
 			
 			// Set physics properties
-			gravity.y = 2.6;
+			gravity.y = 2.0;
 			maxVelocity.y = kJumpForce;
 			maxVelocity.x = kMoveSpeed * 2;
 			friction.x = 0.7; // floor friction
-			friction.y = 2.0; // wall friction
+			friction.y = 0; // wall friction
 			
 			// Define input keys
 			Input.define("left", Key.A, Key.LEFT);
@@ -69,6 +69,11 @@ package
 			
 			if (Input.check("right"))
 				acceleration.x = kMoveSpeed;
+				
+			if (Input.pressed("jump"))
+			{
+				trace("heyyy");
+			}
 			
 			if (Input.pressed("jump") && onGround)
 			{

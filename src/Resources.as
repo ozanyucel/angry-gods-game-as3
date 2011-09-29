@@ -2,15 +2,15 @@ package
 {	
 	public class Resources
 	{
-		[Embed(source = '../assets/character.png')] 
+		[Embed(source = '../assets/character_small.png')] 
 		public static const GFX_PLAYER:Class;
-		static public const GFX_PLAYER_W:int = 32;
-		static public const GFX_PLAYER_H:int = 32;
+		static public const GFX_PLAYER_W:int = 16;
+		static public const GFX_PLAYER_H:int = 16;
 		
-		[Embed(source = '../assets/blocks.png')] 
+		[Embed(source = '../assets/blocks_small.png')] 
 		public static const GFX_BLOCKS:Class;	
-		static public const GFX_BLOCK_W:int = 32;
-		static public const GFX_BLOCK_H:int = 32;
+		static public const GFX_BLOCK_W:int = 16;
+		static public const GFX_BLOCK_H:int = 16;
 		
 		[Embed(source = "../assets/blocks.xml", mimeType = "application/octet-stream")]
 		static public const XML_BLOCKS:Class;

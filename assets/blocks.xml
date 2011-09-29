@@ -1,8 +1,8 @@
 <asset>
-	<width>128</width>
-	<height>32</height>
-	<tileWidth>32</tileWidth>
-	<tileHeight>32</tileHeight>
+	<width>64</width>
+	<height>16</height>
+	<tileWidth>16</tileWidth>
+	<tileHeight>16</tileHeight>
 	<tileGraphics>
 		<graphic x="0" y="0" width="1" height="1" name="block_1" />
 		<graphic x="1" y="0" width="1" height="1" name="block_2" />

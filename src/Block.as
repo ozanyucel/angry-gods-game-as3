@@ -33,7 +33,7 @@ package
 			graphic = tileGraphic.getImage(rect);
 			
 			// Set physics properties
-			gravity.y = 2.6;
+			gravity.y = 2.0;
 			maxVelocity.y =  gravity.y * 4;
 			
 			type = "block";
