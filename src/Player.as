@@ -5,8 +5,11 @@ package
 	import flash.geom.Point;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.graphics.Emitter;
+	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.utils.Ease;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 	/**
@@ -15,7 +18,7 @@ package
 	$(CBI)*/
 	public class Player extends PhysicsEntity
 	{
-		private var playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_PLAYER_W, Resources.GFX_PLAYER_H);
+		private var _playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_PLAYER_W, Resources.GFX_PLAYER_H);
 		
 		private static const kMoveSpeed:Number = 1.5;
 		private static const kJumpForce:Number = 18;
@@ -25,6 +28,8 @@ package
 			
 		public var minWorld:Point = new Point(0, 0);
 		public var maxWorld:Point = new Point(FP.screen.width, FP.screen.height);
+		
+		private var _bloodSplash:Emitter;
 		
 		public function Player(initX:Number=0, initY:Number=0) // floor position
 		{	
@@ -38,15 +43,21 @@ package
 			
 			_initY = y;
 			
-			playerSprite.add("right_idle", [19, 19, 19, 20], 0.1, true);
-			playerSprite.add("right_walk", [0, 1, 2, 3, 4, 5, 6, 7], 0.25, true);
-			playerSprite.add("right_jump", [21]);
+			_playerSprite.add("right_idle", [19, 19, 19, 20], 0.1, true);
+			_playerSprite.add("right_walk", [0, 1, 2, 3, 4, 5, 6, 7], 0.25, true);
+			_playerSprite.add("right_jump", [21]);
 			
-			playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
-			playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
-			playerSprite.add("left_jump", [18]);
+			_playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
+			_playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
+			_playerSprite.add("left_jump", [18]);
+			
+			_bloodSplash = new Emitter(new BitmapData(1, 1, false, 0xFFFF0000), 1, 1);
+			_bloodSplash.newType("blood", [0]);
+			_bloodSplash.setAlpha("blood", 1, 0);
+			_bloodSplash.setMotion("blood", 0, 25, 20, 180, -5, -5, Ease.quadOut);
+			_bloodSplash.relative = false;
 				
-			graphic = playerSprite; 			//new Image(new BitmapData(PLAYER_WIDTH, PLAYER_HEIGHT, false, 0xff0000));
+			graphic = new Graphiclist(_playerSprite, _bloodSplash);
 			
 			// Set physics properties
 			gravity.y = 2.0;
@@ -97,13 +108,15 @@ package
 			if (block)
 			{
 				if (onGround) {
-					trace("DEAD!: " + y + ", initY: " + _initY);
-					_dead = true;
+					kill();
 				}
 				else {
 					y = block.y + block.height;
 				}
 			}
+			
+			if (!collidable && _bloodSplash.particleCount == 0)
+				_dead = true;
 		}
 		
 		private function setAnimation():void
@@ -127,7 +140,7 @@ package
 				animation += "jump";
 			}
 			
-			playerSprite.play(animation);
+			_playerSprite.play(animation);
 		}
 		
 		override protected function canMoveTo(x:Number, y:Number):Boolean 
@@ -141,6 +154,22 @@ package
 			
 			return super.canMoveTo(x, y);
 		}	
+		
+		public function kill():void 
+		{
+			collidable = false;
+			_playerSprite.visible = false;
+			
+			createBloodSplash();
+		}
+		
+		private function createBloodSplash():void 
+		{
+			for (var i:int = 0; i < 100; i++) 
+			{
+				_bloodSplash.emit("blood", x + halfWidth, y + halfHeight);
+			}
+		}
 		
 		public function get dead():Boolean 
 		{

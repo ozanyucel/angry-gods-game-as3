@@ -1,9 +1,11 @@
 package worlds
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import graphics.*;
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.graphics.Emitter;
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.tweens.misc.VarTween;
 	import net.flashpunk.utils.Ease;
@@ -20,6 +22,8 @@ package worlds
 		private var _player:Player;
 		private var _hasPlayedTitle:Boolean = false;
 		private var _infoText:Text;
+		private var _blockSpawnTime:Number = 0;
+
 
 		public function GameWorld()
 		{	
@@ -46,7 +50,7 @@ package worlds
 			entity.graphic = _tilemap;
 			entity.mask = _grid;
 			entity.type = "solid";
-			add(entity);			
+			add(entity);					
 			
 			_hasPlayedTitle = false;
 		}
@@ -80,25 +84,20 @@ package worlds
 		
 		override public function update():void
 		{
-			if(FP.random < GC.BLOCK_SPAWN_CHANCE)
+			_blockSpawnTime += FP.elapsed;
+			if(_blockSpawnTime >= GC.BLOCK_SPAWN_TIME)
 			{
+				_blockSpawnTime = 0;
+				
 				var blockInfo:TileGraphicInfo = AssetManager.getRandomGraphic(Resources.GFX_BLOCKS);
 				
 				add(new Block(blockInfo));
 			}
 			
-			if (_player && _player.dead) {
+			if (_player && _player.dead) {	
 				this.remove(_player);
 				_player = null;
-				_infoText = new Text("click to play again!");
-				_infoText.x = FP.screen.width / 2 - _infoText.width / 2;
-				_infoText.y = FP.screen.height / 2 - _infoText.width / 2 + 50;
-				_infoText.color = 0;
-				_infoText.alpha = 0;
-				addGraphic(_infoText, -1);
-				var textTween:VarTween = new VarTween(onTextFade);
-				textTween.tween(_infoText, "alpha", 1, 0.5, Ease.quadIn);
-				addTween(textTween, true);
+				createInfoText();
 			}
 			
 			if (_infoText && _hasPlayedTitle) {
@@ -108,9 +107,34 @@ package worlds
 					startGame();
 				}		
 			}
+			else if (_player) {			
+				if (Input.check("die")) {
+					_player.kill();
+				}
+			}
 			
 			super.update();
 		}		
+		
+		//private function killPlayer():void 
+		//{
+			//_player.createBloodSplash();
+			//this.remove(_player);
+			//_player = null;			
+		//}
+		
+		private function createInfoText():void 
+		{
+			_infoText = new Text("click to play again!");
+			_infoText.x = FP.screen.width / 2 - _infoText.width / 2;
+			_infoText.y = FP.screen.height / 2 - _infoText.width / 2 + 50;
+			_infoText.color = 0;
+			_infoText.alpha = 0;
+			addGraphic(_infoText, -1);
+			var textTween:VarTween = new VarTween(onTextFade);
+			textTween.tween(_infoText, "alpha", 1, 0.5, Ease.quadIn);
+			addTween(textTween, true);			
+		}
 		
 		protected function onTextFade():void
 		{

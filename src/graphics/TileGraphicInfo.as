@@ -2,6 +2,7 @@ package graphics
 {
 	import flash.geom.Rectangle;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.graphics.TiledImage;
 	/**
 	$(CBI)* ...
 	$(CBI)* @author Ozan Yücel
@@ -49,9 +50,9 @@ package graphics
 			return _source;
 		}	
 		
-		public function getImage(rect:Rectangle):Image 
+		public function getImage(rect:Rectangle):TiledImage
 		{
-			return new Image(source, rect);
+			return new TiledImage(source, rect.width, rect.height, rect);
 		}
 	}
 }

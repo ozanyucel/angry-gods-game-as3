@@ -20,7 +20,8 @@ package
 			FP.screen.scale = 2;
 			FP.screen.color = 0x8EDFFA;
 			
-			Input.define("start", Key.X, Key.D);
+			Input.define("start", Key.X);
+			Input.define("die", Key.D);
 		}
 		
 		override public function init():void {
