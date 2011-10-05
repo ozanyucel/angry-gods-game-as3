@@ -18,10 +18,10 @@ package
 	$(CBI)*/
 	public class Player extends PhysicsEntity
 	{
-		private var _playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_PLAYER_W, Resources.GFX_PLAYER_H);
+		private var _playerSprite:Spritemap = new Spritemap(Resources.GFX_PLAYER, Resources.GFX_TILE_W, Resources.GFX_TILE_H);
 		
 		private static const kMoveSpeed:Number = 1.5;
-		private static const kJumpForce:Number = 18;
+		private static const kJumpForce:Number = 15;
 		
 		private var _initY:Number = 0;
 		private var _dead:Boolean = false;
@@ -33,9 +33,9 @@ package
 		
 		public function Player(initX:Number=0, initY:Number=0) // floor position
 		{	
-			width = Resources.GFX_PLAYER_W / 2;
+			width = Resources.GFX_PLAYER_W;
 			height = Resources.GFX_PLAYER_H;
-			originX = (width - Resources.GFX_PLAYER_W) / 2;
+			originX = (Resources.GFX_PLAYER_W - Resources.GFX_TILE_W) / 2;
 			originY = 0;
 			
 			x = initX - (width / 2);
@@ -43,18 +43,30 @@ package
 			
 			_initY = y;
 			
-			_playerSprite.add("right_idle", [19, 19, 19, 20], 0.1, true);
-			_playerSprite.add("right_walk", [0, 1, 2, 3, 4, 5, 6, 7], 0.25, true);
-			_playerSprite.add("right_jump", [21]);
+			_playerSprite.add("right_idle", [0]);
+			_playerSprite.add("right_walk", [2, 3], 0.25, true);
+			_playerSprite.add("right_jump", [1]);
 			
-			_playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
-			_playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
-			_playerSprite.add("left_jump", [18]);
+			//_playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
+			//_playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
+			//_playerSprite.add("left_jump", [18]);
 			
-			_bloodSplash = new Emitter(new BitmapData(1, 1, false, 0xFFFF0000), 1, 1);
+			_bloodSplash = new Emitter(new BitmapData(1, 1), 1, 1);
 			_bloodSplash.newType("blood", [0]);
 			_bloodSplash.setAlpha("blood", 1, 0);
-			_bloodSplash.setMotion("blood", 0, 25, 20, 180, -5, -5, Ease.quadOut);
+			_bloodSplash.setColor("blood", 0xFFFF0000, 0xFFFF0000);
+			_bloodSplash.setMotion("blood", 45, 5, 5, -270, 25, 20, Ease.circOut);
+			
+			_bloodSplash.newType("bones", [0]);
+			_bloodSplash.setAlpha("bones", 1, 0.5);
+			_bloodSplash.setColor("bones", 0xFFFFFFFF, 0xFFFFFFFF);
+			_bloodSplash.setMotion("bones", 0, 2, 10, 360, 15, 25, Ease.quadOut);
+			
+			_bloodSplash.newType("guts", [0]);
+			_bloodSplash.setAlpha("guts", 1, 0.5);
+			_bloodSplash.setColor("guts", 0xFF8A0808, 0xFF8A0808);
+			_bloodSplash.setMotion("guts", 0, 2, 10, 360, 15, 25, Ease.quadOut);
+			
 			_bloodSplash.relative = false;
 				
 			graphic = new Graphiclist(_playerSprite, _bloodSplash);
@@ -63,7 +75,7 @@ package
 			gravity.y = 2.0;
 			maxVelocity.y = kJumpForce;
 			maxVelocity.x = kMoveSpeed * 2;
-			friction.x = 0.7; // floor friction
+			friction.x = 1; // floor friction
 			friction.y = 0; // wall friction
 			
 			// Define input keys
@@ -124,20 +136,22 @@ package
 			var animation:String;
 			
 			if (facing == LEFT)
-				animation = "left_";
+				//animation = "left_";
+				_playerSprite.flipped = true;
 			else
-				animation = "right_";
+				//animation = "right_";
+				_playerSprite.flipped = false;
 			
 			if (onGround)
 			{
 				if (velocity.x == 0)
-					animation += "idle";
+					animation = "right_idle";
 				else
-					animation += "walk";
+					animation = "right_walk";
 			}
 			else
 			{
-				animation += "jump";
+				animation = "right_jump";
 			}
 			
 			_playerSprite.play(animation);
@@ -157,6 +171,9 @@ package
 		
 		public function kill():void 
 		{
+			if (!collidable)
+				return;
+			
 			collidable = false;
 			_playerSprite.visible = false;
 			
@@ -165,10 +182,16 @@ package
 		
 		private function createBloodSplash():void 
 		{
-			for (var i:int = 0; i < 100; i++) 
-			{
-				_bloodSplash.emit("blood", x + halfWidth, y + halfHeight);
-			}
+			var i:int = 0;
+			
+			for (i = 0; i < 100; i++) 
+				_bloodSplash.emit("blood", x + halfWidth, y + height);
+			
+			for (i = 0; i < 10; i++) 
+				_bloodSplash.emit("bones", x + halfWidth, y + height);
+			
+			for (i = 0; i < 5; i++) 
+				_bloodSplash.emit("guts", x + halfWidth, y + height);
 		}
 		
 		public function get dead():Boolean 

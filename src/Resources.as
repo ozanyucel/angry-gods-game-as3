@@ -2,9 +2,12 @@ package
 {	
 	public class Resources
 	{
-		[Embed(source = '../assets/character_small.png')] 
+		static public const GFX_TILE_W:int = 16;
+		static public const GFX_TILE_H:int = 16;
+		
+		[Embed(source = '../assets/necmi_small.png')] 
 		public static const GFX_PLAYER:Class;
-		static public const GFX_PLAYER_W:int = 16;
+		static public const GFX_PLAYER_W:int = 12;
 		static public const GFX_PLAYER_H:int = 16;
 		
 		[Embed(source = '../assets/blocks_small.png')] 
