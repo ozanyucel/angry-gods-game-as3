@@ -8,12 +8,12 @@ package
 	import worlds.GameWorld;
 	import worlds.TitleWorld;
 	
-	[SWF(width='448', height='768', frameRate='30')]
+	[SWF(width='320', height='640', frameRate='30')]
 	public class Main extends Engine
 	{		
 		public function Main():void
 		{
-			super(224, 384, 30, true);
+			super(160, 320, 30, true);
 			
 			var assetManager:AssetManager = new AssetManager();
 			

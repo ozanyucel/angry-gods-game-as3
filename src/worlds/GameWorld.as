@@ -17,13 +17,17 @@ package worlds
 	
 	public class GameWorld extends World
 	{
+		static public const SCORE_MULTIPLIER:int = 10;
+		
 		private var _tilemap:Tilemap;
 		private var _grid:Grid;
 		private var _player:Player;
 		private var _hasPlayedTitle:Boolean = false;
 		private var _infoText:Text;
 		private var _blockSpawnTime:Number = 0;
-
+		private var _minPlayerY:int;
+		private var _scoreText:Text;
+		private var _score:int = 0;
 
 		public function GameWorld()
 		{	
@@ -53,6 +57,10 @@ package worlds
 			add(entity);					
 			
 			_hasPlayedTitle = false;
+			
+			createScoreText();
+			
+			_minPlayerY = _player.y;
 		}
 		
 		public function addBlockToGround(block:Block):void 
@@ -111,6 +119,13 @@ package worlds
 				if (Input.check("die")) {
 					_player.kill();
 				}
+				else {
+					if (_player.y < _minPlayerY) {
+						_score += (_minPlayerY - _player.y) * SCORE_MULTIPLIER;
+						_scoreText.text = _score.toString();
+						_minPlayerY = _player.y;
+					}
+				}
 			}
 			
 			super.update();
@@ -134,6 +149,15 @@ package worlds
 			var textTween:VarTween = new VarTween(onTextFade);
 			textTween.tween(_infoText, "alpha", 1, 0.5, Ease.quadIn);
 			addTween(textTween, true);			
+		}
+		
+		private function createScoreText():void 
+		{
+			_scoreText = new Text("     ");
+			_scoreText.x = 10;
+			_scoreText.y = 10;
+			_scoreText.color = 0;
+			addGraphic(_scoreText, -1);
 		}
 		
 		protected function onTextFade():void
