@@ -31,6 +31,9 @@ package
 		
 		private var _bloodSplash:Emitter;
 		
+		static public const JUMP_COUNT:int = 1;
+		private var _jumpCount:int = JUMP_COUNT;
+		
 		public function Player(initX:Number=0, initY:Number=0) // floor position
 		{	
 			width = Resources.GFX_PLAYER_W;
@@ -46,10 +49,6 @@ package
 			_playerSprite.add("right_idle", [0]);
 			_playerSprite.add("right_walk", [2, 3], 0.25, true);
 			_playerSprite.add("right_jump", [1]);
-			
-			//_playerSprite.add("left_idle", [17, 17, 17, 16], 0.1, true);
-			//_playerSprite.add("left_walk", [15, 14, 13, 12, 11, 10, 9, 8], 0.25, true);
-			//_playerSprite.add("left_jump", [18]);
 			
 			_bloodSplash = new Emitter(new BitmapData(1, 1), 1, 1);
 			_bloodSplash.newType("blood", [0]);
@@ -93,16 +92,12 @@ package
 			
 			if (Input.check("right"))
 				acceleration.x = kMoveSpeed;
-				
-			if (Input.pressed("jump"))
-			{
-				trace("heyyy");
-			}
 			
-			if (Input.pressed("jump") && onGround)
+			if (Input.pressed("jump") && _jumpCount > 0)
 			{
-				acceleration.y = -FP.sign(gravity.y) * kJumpForce;
-				acceleration.x = -FP.sign(gravity.x) * kJumpForce;
+				acceleration.y += -FP.sign(gravity.y) * kJumpForce;
+				acceleration.x += -FP.sign(gravity.x) * kJumpForce;
+				_jumpCount--;
 			}
 			
 			// Make animation changes here
@@ -192,6 +187,11 @@ package
 			
 			for (i = 0; i < 5; i++) 
 				_bloodSplash.emit("guts", x + halfWidth, y + height);
+		}
+		
+		override protected function onHitGround():void 
+		{
+			_jumpCount = JUMP_COUNT;
 		}
 		
 		public function get dead():Boolean 

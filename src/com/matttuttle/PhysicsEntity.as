@@ -32,7 +32,10 @@ package com.matttuttle
 		public function get onWall():Boolean { return _onWall; }
 		
 		override public function update():void
-		{
+		{		
+			if (!collidable)
+				return;
+			
 			// Apply acceleration and velocity
 			velocity.x += acceleration.x;
 			velocity.y += acceleration.y;
@@ -138,12 +141,19 @@ package com.matttuttle
 				}
 				else
 				{
-					if (FP.sign(velocity.y) == FP.sign(gravity.y))
+					if (FP.sign(velocity.y) == FP.sign(gravity.y)) {
 						_onGround = true;
+						onHitGround();
+					}
 					velocity.y = 0;
 					break;					
 				}
 			}
+		}
+		
+		protected function onHitGround():void 
+		{
+			// override
 		}
 		
 		protected function canMoveTo(x:Number, y:Number):Boolean 

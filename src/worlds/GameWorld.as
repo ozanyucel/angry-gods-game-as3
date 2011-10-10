@@ -14,6 +14,7 @@ package worlds
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Tilemap;
 	import net.flashpunk.masks.Grid;
+	import utility.Camera;
 	
 	public class GameWorld extends World
 	{
@@ -28,6 +29,7 @@ package worlds
 		private var _minPlayerY:int;
 		private var _scoreText:Text;
 		private var _score:int = 0;
+		private var _camera:Camera;
 
 		public function GameWorld()
 		{	
@@ -61,6 +63,8 @@ package worlds
 			createScoreText();
 			
 			_minPlayerY = _player.y;
+			
+			_camera = new Camera(0, 0, 320, 16, 2);
 		}
 		
 		public function addBlockToGround(block:Block):void 
@@ -91,7 +95,7 @@ package worlds
 		}
 		
 		override public function update():void
-		{
+		{					
 			_blockSpawnTime += FP.elapsed;
 			if(_blockSpawnTime >= GC.BLOCK_SPAWN_TIME)
 			{
@@ -115,7 +119,9 @@ package worlds
 					startGame();
 				}		
 			}
-			else if (_player) {			
+			else if (_player) {		
+				_camera.followPlayer(FP.screen.height * 100, FP.screen.width, _player);
+				
 				if (Input.check("die")) {
 					_player.kill();
 				}
@@ -131,13 +137,6 @@ package worlds
 			super.update();
 		}		
 		
-		//private function killPlayer():void 
-		//{
-			//_player.createBloodSplash();
-			//this.remove(_player);
-			//_player = null;			
-		//}
-		
 		private function createInfoText():void 
 		{
 			_infoText = new Text("click to play again!");
@@ -145,6 +144,7 @@ package worlds
 			_infoText.y = FP.screen.height / 2 - _infoText.width / 2 + 50;
 			_infoText.color = 0;
 			_infoText.alpha = 0;
+			_infoText.scrollX = _infoText.scrollY = 0;
 			addGraphic(_infoText, -1);
 			var textTween:VarTween = new VarTween(onTextFade);
 			textTween.tween(_infoText, "alpha", 1, 0.5, Ease.quadIn);
@@ -157,6 +157,7 @@ package worlds
 			_scoreText.x = 10;
 			_scoreText.y = 10;
 			_scoreText.color = 0;
+			_scoreText.scrollX = _scoreText.scrollY = 0;
 			addGraphic(_scoreText, -1);
 		}
 		

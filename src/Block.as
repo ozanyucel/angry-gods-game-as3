@@ -25,7 +25,7 @@ package
 			originY = 0;
 			
 			x = FP.rand(FP.screen.width / width) * width;
-			y = 0;			
+			y = FP.camera.y - height;			
 				
 			var kx:int = Resources.GFX_BLOCK_W;
 			var ky:int = Resources.GFX_BLOCK_H;
