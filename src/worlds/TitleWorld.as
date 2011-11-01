@@ -26,10 +26,10 @@ package worlds
 		{
 			_title = addGraphic(new Image(Resources.GFX_TITLE));	
 			
-			_infoText = new Text("click to play");
+			_infoText = new Text("click x to play");
 			_infoText.x = FP.screen.width / 2 - _infoText.width / 2;
-			_infoText.y = FP.screen.height - 40;
-			_infoText.color = 0;
+			_infoText.y = FP.screen.height / 2 - 45;
+			_infoText.color = 0xFF0000;
 			_infoText.alpha = 0;
 			addGraphic(_infoText, -1);
 			var textTween:VarTween = new VarTween(onTextFade);
