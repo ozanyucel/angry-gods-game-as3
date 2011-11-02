@@ -64,7 +64,7 @@ package worlds
 			
 			_minPlayerY = _player.y;
 			
-			_camera = new Camera(0, 0, 320, 16, 2);
+			_camera = new Camera(0, 0, 150, 16, 2);
 		}
 		
 		public function addBlockToGround(block:Block):void 
@@ -153,7 +153,7 @@ package worlds
 		
 		private function createScoreText():void 
 		{
-			_scoreText = new Text("     ");
+			_scoreText = new Text("0       ");
 			_scoreText.x = 10;
 			_scoreText.y = 10;
 			_scoreText.color = 0;
